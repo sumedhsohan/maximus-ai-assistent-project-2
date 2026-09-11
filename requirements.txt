@@ -1,0 +1,7 @@
+flask
+flask-cors
+psutil
+Pillow
+screen_brightness_control
+pycaw
+comtypes

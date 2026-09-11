@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Maximus — AI Chat Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- AUTH: LOG IN / CREATE ACCOUNT -->
+<div id="authScreen">
+  <div class="login-card">
+    <div class="login-brand"><span class="mark">M</span>Maximus</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" type="button">Log in</button>
+      <button class="auth-tab" id="tabRegister" type="button">Create account</button>
+    </div>
+
+    <form id="loginForm" class="auth-form">
+      <div class="login-sub">Welcome back. Log in with your email and password to continue.</div>
+      <div class="field">
+        <label>Email</label>
+        <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="loginPassword" type="password" placeholder="Your password" autocomplete="current-password">
+      </div>
+      <div class="auth-error" id="loginError"></div>
+      <button type="submit" class="btn-primary" id="loginBtn">Log in</button>
+    </form>
+
+    <form id="registerForm" class="auth-form hidden">
+      <div class="login-sub">Create an account to save your chats on this device.</div>
+      <div class="field">
+        <label>Email</label>
+        <input id="registerEmail" type="email" placeholder="you@example.com" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="registerPassword" type="password" placeholder="Choose a password" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label>Confirm password</label>
+        <input id="registerPassword2" type="password" placeholder="Re-enter password" autocomplete="new-password">
+      </div>
+      <div class="auth-error" id="registerError"></div>
+      <button type="submit" class="btn-primary" id="registerBtn">Create account</button>
+    </form>
+
+    <div class="field-hint" style="text-align:center;margin-top:16px;">Your account and chats are stored only in this browser's local storage — nothing is sent to a server except your messages to the AI provider once you add an API key.</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand-row"><span class="mark">M</span><span class="name">Maximus</span></div>
+      <button class="new-chat-btn" id="newChatBtn">＋&nbsp; New chat</button>
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Search chats...">
+      </div>
+    </div>
+    <div class="sidebar-scroll" id="sidebarScroll">
+      <div class="side-section" id="projectsSection">
+        <div class="side-section-head">
+          <span>Projects</span>
+          <span class="add-project" id="addProjectBtn" title="New project">＋</span>
+        </div>
+        <div id="projectsList"></div>
+      </div>
+      <div class="side-section" id="favoritesSection">
+        <div class="side-section-head"><span>Favorites</span></div>
+        <div id="favoritesList"></div>
+      </div>
+      <div class="side-section" id="allChatsSection">
+        <div class="side-section-head"><span>Chats</span></div>
+        <div id="allChatsList"></div>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <div class="uname" id="userName">User</div>
+        <div class="ukey" id="userKeyStatus">No API key</div>
+      </div>
+      <button class="icon-btn" id="appointmentAgentBtn" title="Maximus Appointment Agent">📅</button>
+      <button class="icon-btn" id="themeToggleBtn" title="Toggle bright / dark theme">☀️</button>
+      <button class="icon-btn" id="settingsBtn" title="Settings">⚙</button>
+    </div>
+  </aside>
+
+  <main class="chat-main">
+    <div class="chat-topbar">
+      <button class="icon-btn" id="mobileMenuBtn" style="display:none;">☰</button>
+      <input class="chat-title-edit" id="chatTitleInput" placeholder="Untitled chat" disabled>
+    </div>
+
+    <div class="messages-wrap" id="messagesWrap">
+      <div class="messages-inner" id="messagesInner">
+        <div class="empty-state" id="emptyState">
+          <div class="mark">C</div>
+          <h2>Start a new conversation</h2>
+          <p>Ask a question, paste some text, upload a PDF, Word, Excel or PowerPoint file, or tap the mic to speak. Your chats, projects and favorites are all saved locally in this browser.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <div class="composer" id="composerBox">
+        <div class="pending-attachments" id="pendingAttachments"></div>
+        <div class="composer-input-row">
+          <button class="composer-btn" id="attachBtn" title="Attach file">📎</button>
+          <textarea id="messageInput" rows="1" placeholder="Message Maximus..."></textarea>
+          <button class="composer-btn mic" id="micBtn" title="Voice input">🎤</button>
+          <button class="composer-btn send" id="sendBtn" title="Send" disabled>➤</button>
+        </div>
+      </div>
+      <div class="composer-hint">Maximus can read text, PDF, Word, Excel and PowerPoint files, and images you attach. Ask it to answer questions from a file and export the reply as a PDF.</div>
+      <input type="file" id="fileInput" multiple style="display:none" accept="image/*,video/*,.txt,.md,.csv,.json,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+    </div>
+  </main>
+</div>
+
+<!-- MAXIMUS AI ASSISTANT (Jarvis-style voice assistant) -->
+<button id="assistantFab" class="assistant-fab" title="Maximus AI Assistant">
+  <span class="assistant-fab-icon">✨</span><span class="assistant-fab-label">AI Assistant</span>
+</button>
+
+<div id="assistantOverlay" class="assistant-overlay hidden">
+  <button id="assistantCloseBtn" class="assistant-close" title="Close">✕</button>
+  <div class="assistant-stage">
+    <canvas id="orbCanvas"></canvas>
+    <div id="visionPreview" class="vision-preview hidden">
+      <video id="visionVideo" autoplay playsinline muted></video>
+      <canvas id="handSkeletonCanvas" class="hand-skeleton-canvas"></canvas>
+    </div>
+    <div id="screenPreview" class="screen-preview hidden">
+      <div class="screen-preview-badge"><span class="rec-dot"></span>Screen sharing</div>
+      <video id="screenVideo" autoplay playsinline muted></video>
+    </div>
+  </div>
+  <canvas id="visionCanvas" style="display:none"></canvas>
+  <canvas id="screenCanvas" style="display:none"></canvas>
+  <div class="assistant-status" id="assistantStatus">Tap "Start Listening" and speak</div>
+  <div class="hand-debug-label" id="handDebugLabel"></div>
+  <div class="voice-wave" id="voiceWave"></div>
+  <div class="assistant-transcript" id="assistantTranscript"></div>
+  <div class="now-playing-bar hidden" id="spotifyNowPlaying">
+    <span class="now-playing-track" id="nowPlayingTrack"></span>
+    <button class="icon-btn" id="npPrevBtn" title="Previous">⏮</button>
+    <button class="icon-btn" id="npPlayPauseBtn" title="Play / Pause">⏸</button>
+    <button class="icon-btn" id="npNextBtn" title="Next">⏭</button>
+    <button class="icon-btn" id="npLoopBtn" title="Loop this song">🔁</button>
+  </div>
+  <div class="assistant-controls">
+    <button id="listenToggleBtn" class="listen-btn">🎙️ Start Listening</button>
+    <button id="stopSpeakingBtn" class="assistant-secondary-btn">🔇 Stop Speaking</button>
+    <button id="visionToggleBtn" class="assistant-secondary-btn">👁️ Vision</button>
+    <button id="screenShareToggleBtn" class="assistant-secondary-btn">🖥️ Share Screen</button>
+    <button id="handControlToggleBtn" class="assistant-secondary-btn">🖐️ Hand Control</button>
+    <button id="assistantContactsBtn" class="assistant-secondary-btn">👤 Contacts</button>
+    <button id="connectPhoneBtn" class="assistant-secondary-btn">🔗 Connect Phone</button>
+    <button id="connectEmailBtn" class="assistant-secondary-btn">📧 Connect Email</button>
+    <button id="appointmentAgentOverlayBtn" class="assistant-secondary-btn">📅 Book Appointment</button>
+  </div>
+  <div class="assistant-hint"></div>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<!-- File-reading libraries (client-side only, used to let Maximus read attachments) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<!-- PDF export library (used for the "export answer as PDF" feature) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Spotify Web Playback SDK (used for in-app Spotify playback via voice commands) -->
+<script src="https://sdk.scdn.co/spotify-player.js"></script>
+<!-- Google Identity Services (used for Google Calendar OAuth — read/create events) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- MediaPipe Hands (used for the fist-to-move / open-to-click hand gesture cursor control) -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js"></script>
+<!-- Syntax highlighting for code blocks (coding-focused answers) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+<script src="app.js"></script>
+<script src="hand-control.js"></script>
+<script src="appointment-agent.js"></script>
+</body>
+</html>
